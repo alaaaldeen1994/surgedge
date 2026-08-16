@@ -2563,3 +2563,100 @@ h1,h2,h3,h4,h5,h6 {
     .impact-divider       { width: 80%; height: 1px; }
     .triage-wizard-card   { padding: 20px 16px; }
 }
+
+/* ─────────────────────────────────────────────
+   19. VIDEO UPLOAD STUDIO & DROPZONE
+   ───────────────────────────────────────────── */
+.curriculum-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.curriculum-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.btn-upload-hero {
+    background: linear-gradient(135deg, #0F4C81, #0284C7);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+.btn-upload-hero:hover {
+    background: linear-gradient(135deg, #0284C7, #38BDF8);
+    color: #07111E;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+}
+.video-upload-banner {
+    background: linear-gradient(135deg, #07111E 0%, #0F2744 100%);
+    border: 1.5px dashed rgba(56, 189, 248, 0.4);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+.video-upload-banner:hover,
+.video-upload-banner.dragover {
+    border-color: #38BDF8;
+    background: linear-gradient(135deg, #0B192C 0%, #16365C 100%);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+.upload-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #F8FAFC;
+}
+.upload-banner-content strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #38BDF8;
+    margin-bottom: 2px;
+}
+.upload-banner-content p {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    margin: 0;
+}
+.upload-icon-pulse {
+    font-size: 1.6rem;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.uploaded-badge-tag {
+    background: #0284C7;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+}
+

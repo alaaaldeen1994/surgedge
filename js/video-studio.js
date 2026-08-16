@@ -39,6 +39,7 @@ class SurgicalAcademyEngine {
                 this.loadCurriculumModule(defaultMod);
             }
 
+            this.setupCurriculumDirectUpload();
             window.addEventListener('resize', () => this.resizeCanvas());
         }
 
@@ -170,7 +171,7 @@ class SurgicalAcademyEngine {
                     <span class="module-duration-badge">${mod.duration || '15:00'}</span>
                 </div>
                 <div class="module-info-block">
-                    <h4 class="module-title">${mod.title}</h4>
+                    <h4 class="module-title">${mod.title} ${mod.isUploaded ? '<span class="uploaded-badge-tag">Uploaded</span>' : ''}</h4>
                     <span class="module-spec-tag">${mod.specialty}</span>
                     <span class="module-author">${mod.author}</span>
                 </div>
@@ -328,6 +329,107 @@ class SurgicalAcademyEngine {
         if (window.showAppToast) {
             window.showAppToast('Surgical training annotation saved to downloads.', 'success');
         }
+    }
+
+    /* --- DIRECT VIDEO UPLOAD ENGINE --- */
+    setupCurriculumDirectUpload() {
+        const quickInput = document.getElementById('curriculumQuickUploadInput');
+        const quickBtn = document.getElementById('curriculumQuickUploadBtn');
+        const browseBtn = document.getElementById('curriculumBrowseBtn');
+        const dropBanner = document.getElementById('curriculumDropBanner');
+        const playerViewport = document.querySelector('.curriculum-player-viewport');
+
+        if (quickBtn && quickInput) {
+            quickBtn.addEventListener('click', () => quickInput.click());
+        }
+        if (browseBtn && quickInput) {
+            browseBtn.addEventListener('click', () => quickInput.click());
+        }
+        if (dropBanner && quickInput) {
+            dropBanner.addEventListener('click', (e) => {
+                if (e.target !== browseBtn) quickInput.click();
+            });
+        }
+
+        const handleVideoFile = (file) => {
+            if (!file || (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|avi|mkv|ogg)$/i))) {
+                if (window.showAppToast) window.showAppToast('Please select a valid operative video file (.mp4, .webm, .mov).', 'error');
+                return;
+            }
+
+            const objectUrl = URL.createObjectURL(file);
+            const fileNameClean = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+            const formattedTitle = fileNameClean.charAt(0).toUpperCase() + fileNameClean.slice(1);
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+
+            const newModule = {
+                id: 'uploaded-' + Date.now(),
+                title: formattedTitle,
+                specialty: 'Clinical Operative Case',
+                author: 'Local Attending Surgeon',
+                duration: 'Auto-Calibrated',
+                description: `Operative video file: ${file.name} (${fileSizeMB} MB). Loaded with interactive AR telestration, timeline stepping, and procedural chapters.`,
+                videoUrl: objectUrl,
+                thumbnail: 'assets/images/orthopedic_training_ar.jpg',
+                isUploaded: true,
+                chapters: [
+                    { time: '00:00', title: '1. Incision & Exposure' },
+                    { time: '01:30', title: '2. Operative Field Isolation' },
+                    { time: '03:15', title: '3. Procedural Resection / Realignment' },
+                    { time: '05:45', title: '4. Closure & Hemostasis' }
+                ]
+            };
+
+            if (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos) {
+                window.SURGEDGE_DATA.trainingVideos.unshift(newModule);
+            }
+
+            this.renderCurriculumCatalog();
+            this.selectCurriculumModule(newModule.id);
+
+            if (this.video) {
+                this.video.src = objectUrl;
+                this.video.load();
+                this.video.play().then(() => {
+                    const playBtn = document.getElementById('studioPlayBtn');
+                    if (playBtn) {
+                        playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+                    }
+                    this.isPlaying = true;
+                }).catch(() => {});
+            }
+
+            if (window.showAppToast) {
+                window.showAppToast(`🎉 Video "${file.name}" loaded into AR Player!`, 'success');
+            }
+        };
+
+        if (quickInput) {
+            quickInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    handleVideoFile(e.target.files[0]);
+                }
+            });
+        }
+
+        // Drag & Drop onto drop banner and player
+        [dropBanner, playerViewport].forEach(zone => {
+            if (!zone) return;
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('dragover');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleVideoFile(e.dataTransfer.files[0]);
+                }
+            });
+        });
     }
 
     /* --- VIDEO UPLOAD STUDIO --- */
