@@ -841,10 +841,22 @@ class SurgicalAcademyEngine {
     }
 }
 
-// Global Init
+// Global Class Exports
+window.SurgicalAcademyEngine = SurgicalAcademyEngine;
+window.SurgicalVideoStudio = SurgicalAcademyEngine;
+
+// Global Init Function
 window.initSurgicalAcademy = function() {
     if (!window.videoStudio) {
         window.videoStudio = new SurgicalAcademyEngine();
         window.videoStudio.init();
     }
 };
+
+// Auto-run if DOM is already loaded or on DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => window.initSurgicalAcademy());
+} else {
+    window.initSurgicalAcademy();
+}
+

@@ -2575,6 +2575,17 @@ h1,h2,h3,h4,h5,h6 {
     gap: 16px;
     margin-bottom: 24px;
 }
+.sr-only-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
 .curriculum-header-actions {
     display: flex;
     align-items: center;

@@ -133,15 +133,15 @@
                 <p class="section-subtitle">Faculty-curated operative video lectures with AR telestration and CME certification.</p>
             </div>
             <div class="curriculum-header-actions">
-                <input type="file" id="curriculumQuickUploadInput" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska,video/*" style="display:none;">
-                <button class="btn btn-primary btn-upload-hero" id="curriculumQuickUploadBtn" title="Upload an operative video from your computer">
+                <input type="file" id="curriculumQuickUploadInput" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska,video/*" class="sr-only-input">
+                <label for="curriculumQuickUploadInput" class="btn btn-primary btn-upload-hero" id="curriculumQuickUploadBtn" title="Upload an operative video from your computer">
                     <span>📤</span> Upload Operative Video
-                </button>
+                </label>
             </div>
         </div>
 
         <!-- Quick Video Upload Dropzone Banner -->
-        <div class="video-upload-banner" id="curriculumDropBanner">
+        <label for="curriculumQuickUploadInput" class="video-upload-banner" id="curriculumDropBanner">
             <div class="upload-banner-content">
                 <div class="upload-icon-pulse">📁</div>
                 <div>
@@ -149,8 +149,8 @@
                     <p>Select any .MP4, .WEBM, or .MOV video to load into the AR interactive player with live telestration and CME chapter tracking.</p>
                 </div>
             </div>
-            <button class="btn btn-outline-white btn-sm" id="curriculumBrowseBtn">Browse Video Files</button>
-        </div>
+            <span class="btn btn-outline-white btn-sm" id="curriculumBrowseBtn">Browse Video Files</span>
+        </label>
 
         <div class="curriculum-layout">
             <!-- Player -->
