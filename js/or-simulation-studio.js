@@ -21,15 +21,14 @@ class ORSimulationStudio {
         // Smart Glasses Spatial AR Group
         this.arSmartGlassesGroup = null;
         this.arLaserLine = null;
-        this.arReticleMesh = null;
         this.arDepthPlane = null;
 
         // Zoom & Orbit Configuration
-        this.defaultFov = 50;
-        this.currentFov = 50;
+        this.defaultFov = 48;
+        this.currentFov = 48;
         this.minFov = 18;  // Extreme surgical close-up
         this.maxFov = 75;  // Wide OR theatre panorama
-        this.isAutoOrbiting = true;
+        this.isAutoOrbiting = false; // Completely still by default (No automatic movement)
         this.isPlaying = true;
         this.playbackSpeed = 1;
         this.currentTime = 0;
@@ -74,7 +73,7 @@ class ORSimulationStudio {
         this.camera = new THREE.PerspectiveCamera(this.currentFov, width / height, 0.1, 1000);
         this.camera.position.set(0, 0, 0.1);
 
-        // 3. Renderer
+        // 3. High-Definition Renderer (Razor-Sharp Pixel Ratio)
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas3D,
             antialias: true,
@@ -82,13 +81,13 @@ class ORSimulationStudio {
             powerPreference: 'high-performance'
         });
         this.renderer.setSize(width, height);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.5));
 
         // 4. 360° OrbitControls
         if (typeof THREE.OrbitControls !== 'undefined') {
             this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
             this.controls.enableDamping = true;
-            this.controls.dampingFactor = 0.06;
+            this.controls.dampingFactor = 0.08;
             this.controls.rotateSpeed = -0.55;
             this.controls.enableZoom = false; // Handled smoothly via FOV for 360 spheres
             this.controls.target.set(0, -0.05, -1);
@@ -98,10 +97,10 @@ class ORSimulationStudio {
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
         this.scene.add(ambientLight);
 
-        // 6. Build 360° Panoramic Operating Room Environment
+        // 6. Build High-Definition Panoramic Operating Room Environment
         this.build360PanoramaEnvironment();
 
-        // 7. Build Spatial AR Smart Glasses Precision Crosshair & Resection Laser
+        // 7. Build Spatial AR Smart Glasses Precision Guide
         this.buildSpatialARSmartGlassesLayer();
 
         // 8. Event Listeners & Controls
@@ -121,13 +120,20 @@ class ORSimulationStudio {
     }
 
     build360PanoramaEnvironment() {
-        const sphereGeo = new THREE.SphereGeometry(50, 60, 40);
+        const sphereGeo = new THREE.SphereGeometry(50, 64, 48);
         sphereGeo.scale(-1, 1, 1);
 
         const textureSrc = (typeof window !== 'undefined' && window.OR_PANORAMA_BASE64) ? window.OR_PANORAMA_BASE64 : 'assets/images/or_3d_simulation_suite.jpg';
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load(textureSrc, (texture) => {
             texture.mapping = THREE.EquirectangularReflectionMapping;
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.generateMipmaps = false;
+            if (this.renderer && this.renderer.capabilities) {
+                texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+            }
+
             const sphereMat = new THREE.MeshBasicMaterial({ map: texture });
             this.orPanoramaSphere = new THREE.Mesh(sphereGeo, sphereMat);
             this.scene.add(this.orPanoramaSphere);
@@ -135,7 +141,6 @@ class ORSimulationStudio {
     }
 
     buildSpatialARSmartGlassesLayer() {
-        // Precision AR Smart Glasses spatial alignment line over operative knee field
         this.arSmartGlassesGroup = new THREE.Group();
         this.arSmartGlassesGroup.position.set(0.15, -1.15, -6.8);
 
@@ -151,7 +156,7 @@ class ORSimulationStudio {
         this.arLaserLine.rotation.z = 0.05;
         this.arSmartGlassesGroup.add(this.arLaserLine);
 
-        // Surgical Resection Depth Grid Plane (Subtle Translucent Guide)
+        // Surgical Resection Depth Grid Plane
         const planeGeo = new THREE.PlaneGeometry(1.8, 1.2);
         const planeMat = new THREE.MeshBasicMaterial({
             color: 0x0284C7,
@@ -224,7 +229,7 @@ class ORSimulationStudio {
     }
 
     setupControls() {
-        // 360° Auto-Orbit Toggle
+        // 360° Auto-Orbit Toggle (Only active when user explicitly clicks it)
         const autoOrbitBtn = document.getElementById('or3DAutoOrbitBtn');
         if (autoOrbitBtn) {
             autoOrbitBtn.addEventListener('click', () => {
@@ -237,6 +242,8 @@ class ORSimulationStudio {
         const resetBtn = document.getElementById('or3DResetViewBtn');
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
+                this.isAutoOrbiting = false;
+                if (autoOrbitBtn) autoOrbitBtn.classList.remove('active');
                 this.setZoomFov(this.defaultFov);
                 if (this.camera && this.controls) {
                     this.camera.position.set(0, 0, 0.1);
@@ -254,11 +261,14 @@ class ORSimulationStudio {
                 const camMode = e.currentTarget.dataset.cam;
                 this.activeCameraMode = camMode;
 
+                this.isAutoOrbiting = false;
+                if (autoOrbitBtn) autoOrbitBtn.classList.remove('active');
+
                 if (camMode === 'or-wide') {
-                    this.setZoomFov(50);
+                    this.setZoomFov(48);
                     this.controls.target.set(0, -0.05, -1);
                 } else if (camMode === 'ar-align') {
-                    this.setZoomFov(28); // Precision close-up into AR smart glasses field
+                    this.setZoomFov(26); // Precision close-up into AR smart glasses field
                     this.controls.target.set(0.1, -0.2, -1);
                 }
                 this.controls.update();
@@ -412,7 +422,7 @@ class ORSimulationStudio {
     animate() {
         this.animFrameId = requestAnimationFrame(this.animate);
 
-        // 1. OrbitControls & Continuous 360° Auto-Orbit
+        // 1. OrbitControls (Smooth damping, rotates ONLY when user drags or activates 360 orbit)
         if (this.controls) {
             this.controls.update();
 
