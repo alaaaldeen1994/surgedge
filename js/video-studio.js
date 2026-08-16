@@ -7,36 +7,67 @@
 // INDEXED-DB PERSISTENT SURGICAL VIDEO STORAGE ENGINE
 // ═══════════════════════════════════════════════════════════════════════════
 const SurgEdgeDB = {
-    dbName: 'SurgEdge_Operative_Videos_DB',
+    dbName: 'SurgEdge_Operative_Videos_DB_v2',
     storeName: 'uploaded_videos',
     version: 1,
 
     open() {
         return new Promise((resolve, reject) => {
-            const req = indexedDB.open(this.dbName, this.version);
-            req.onupgradeneeded = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains(this.storeName)) {
-                    db.createObjectStore(this.storeName, { keyPath: 'id' });
+            try {
+                if (!window.indexedDB) {
+                    console.warn('IndexedDB not supported');
+                    return resolve(null);
                 }
-            };
-            req.onsuccess = (e) => resolve(e.target.result);
-            req.onerror = (e) => reject(e.target.error);
+                const req = indexedDB.open(this.dbName, this.version);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(this.storeName)) {
+                        db.createObjectStore(this.storeName, { keyPath: 'id' });
+                    }
+                };
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => {
+                    console.warn('IndexedDB open error:', e.target.error);
+                    resolve(null);
+                };
+            } catch (err) {
+                console.warn('IndexedDB exception:', err);
+                resolve(null);
+            }
         });
     },
 
     async save(record) {
         try {
             const db = await this.open();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(this.storeName, 'readwrite');
-                const store = tx.objectStore(this.storeName);
-                const req = store.put(record);
-                req.onsuccess = () => resolve(true);
-                req.onerror = () => reject(req.error);
+            if (!db) return false;
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(this.storeName, 'readwrite');
+                    const store = tx.objectStore(this.storeName);
+                    // Save clean cloneable record with blob
+                    const cleanRecord = {
+                        id: record.id,
+                        title: record.title,
+                        specialty: record.specialty,
+                        author: record.author,
+                        duration: record.duration,
+                        description: record.description,
+                        blob: record.blob,
+                        fileName: record.fileName,
+                        fileSize: record.fileSize,
+                        isUploaded: true,
+                        createdAt: record.createdAt || Date.now(),
+                        chapters: record.chapters
+                    };
+                    const req = store.put(cleanRecord);
+                    req.onsuccess = () => resolve(true);
+                    req.onerror = () => resolve(false);
+                } catch (e) {
+                    resolve(false);
+                }
             });
         } catch (err) {
-            console.error('SurgEdgeDB save error:', err);
             return false;
         }
     },
@@ -44,15 +75,19 @@ const SurgEdgeDB = {
     async getAll() {
         try {
             const db = await this.open();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(this.storeName, 'readonly');
-                const store = tx.objectStore(this.storeName);
-                const req = store.getAll();
-                req.onsuccess = () => resolve(req.result || []);
-                req.onerror = () => reject(req.error);
+            if (!db) return [];
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(this.storeName, 'readonly');
+                    const store = tx.objectStore(this.storeName);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result || []);
+                    req.onerror = () => resolve([]);
+                } catch (e) {
+                    resolve([]);
+                }
             });
         } catch (err) {
-            console.error('SurgEdgeDB getAll error:', err);
             return [];
         }
     },
@@ -60,15 +95,19 @@ const SurgEdgeDB = {
     async delete(id) {
         try {
             const db = await this.open();
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction(this.storeName, 'readwrite');
-                const store = tx.objectStore(this.storeName);
-                const req = store.delete(id);
-                req.onsuccess = () => resolve(true);
-                req.onerror = () => reject(req.error);
+            if (!db) return false;
+            return new Promise((resolve) => {
+                try {
+                    const tx = db.transaction(this.storeName, 'readwrite');
+                    const store = tx.objectStore(this.storeName);
+                    const req = store.delete(id);
+                    req.onsuccess = () => resolve(true);
+                    req.onerror = () => resolve(false);
+                } catch (e) {
+                    resolve(false);
+                }
             });
         } catch (err) {
-            console.error('SurgEdgeDB delete error:', err);
             return false;
         }
     }
@@ -101,16 +140,13 @@ class SurgicalAcademyEngine {
         this.video = document.getElementById('curriculumVideoPlayer');
         this.canvas = document.getElementById('curriculumTelestrationCanvas');
 
-        // 1. Load Persisted Uploaded Videos from IndexedDB into Catalog
-        await this.restorePersistedVideosFromDB();
-
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
             this.setupPlaybackControls();
             this.setupCanvasDrawing();
             this.renderCurriculumCatalog();
 
-            // Load first available surgical module
+            // Load initial module in memory first
             const defaultMod = (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos && window.SURGEDGE_DATA.trainingVideos[0]);
             if (defaultMod) {
                 this.loadCurriculumModule(defaultMod);
@@ -120,31 +156,39 @@ class SurgicalAcademyEngine {
             window.addEventListener('resize', () => this.resizeCanvas());
         }
 
+        // Restore all uploaded videos from IndexedDB
+        await this.restorePersistedVideosFromDB();
+
         this.setupFacultyDashboard();
         this.setupVideoUploadZone();
         this.setupAuthModalListeners();
     }
 
     async restorePersistedVideosFromDB() {
-        if (!window.SURGEDGE_DATA) return;
-        if (!window.SURGEDGE_DATA.trainingVideos) window.SURGEDGE_DATA.trainingVideos = [];
+        if (!window.SURGEDGE_DATA || !window.SURGEDGE_DATA.trainingVideos) return;
 
         try {
             const savedRecords = await SurgEdgeDB.getAll();
             if (savedRecords && savedRecords.length > 0) {
                 savedRecords.forEach(rec => {
-                    // Recreate active Blob URL from stored IndexedDB Blob
                     if (rec.blob) {
                         rec.videoUrl = URL.createObjectURL(rec.blob);
                     }
-                    // Avoid duplicate insertion
                     if (!window.SURGEDGE_DATA.trainingVideos.some(v => v.id === rec.id)) {
                         window.SURGEDGE_DATA.trainingVideos.unshift(rec);
                     }
                 });
+
+                this.renderCurriculumCatalog();
+
+                // Select the most recent uploaded video if available
+                const latestUploaded = window.SURGEDGE_DATA.trainingVideos.find(v => v.isUploaded);
+                if (latestUploaded) {
+                    this.selectCurriculumModule(latestUploaded.id);
+                }
             }
         } catch (e) {
-            console.warn('Could not restore videos from IndexedDB:', e);
+            console.warn('Could not restore videos from DB:', e);
         }
     }
 
@@ -265,7 +309,7 @@ class SurgicalAcademyEngine {
         }
 
         container.innerHTML = videos.map((mod, idx) => `
-            <div class="curriculum-module-card ${idx === 0 ? 'active' : ''}" onclick="window.videoStudio.selectCurriculumModule('${mod.id}')" data-id="${mod.id}">
+            <div class="curriculum-module-card ${this.activeModuleData && this.activeModuleData.id === mod.id ? 'active' : (idx === 0 && !this.activeModuleData ? 'active' : '')}" onclick="window.videoStudio.selectCurriculumModule('${mod.id}')" data-id="${mod.id}">
                 ${mod.isUploaded ? `<button class="module-delete-btn" onclick="event.stopPropagation(); window.videoStudio.deleteUploadedVideo('${mod.id}')" title="Delete this uploaded video">🗑</button>` : ''}
                 <div class="module-thumb-wrapper">
                     <img src="${mod.thumbnail || 'assets/images/orthopedic_training_ar.jpg'}" alt="${mod.title}" class="module-thumb-img">
@@ -291,7 +335,7 @@ class SurgicalAcademyEngine {
         this.loadCurriculumModule(mod);
 
         if (window.showAppToast) {
-            window.showAppToast(`Loaded procedural lecture: ${mod.title}`, 'info');
+            window.showAppToast(`Loaded: ${mod.title}`, 'info');
         }
     }
 
@@ -305,19 +349,21 @@ class SurgicalAcademyEngine {
 
         if (this.video) {
             if (mod.videoUrl) {
+                this.video.removeAttribute('poster');
                 this.video.src = mod.videoUrl;
                 this.video.load();
+                this.video.play().then(() => {
+                    if (playBtn) {
+                        playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+                    }
+                    this.isPlaying = true;
+                }).catch(() => {});
             } else {
                 this.video.removeAttribute('src');
                 if (mod.thumbnail) {
                     this.video.poster = mod.thumbnail;
                 }
             }
-
-            if (playBtn) {
-                playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;margin-left:2px;"><polygon points="5,3 19,12 5,21"/></svg>';
-            }
-            this.isPlaying = false;
         }
 
         if (titleEl) {
@@ -357,16 +403,14 @@ class SurgicalAcademyEngine {
         // 3. Re-render catalog
         this.renderCurriculumCatalog();
 
-        // 4. If the deleted video was currently active, switch to first available video
-        if (this.activeModuleData && this.activeModuleData.id === modId) {
-            const fallbackMod = window.SURGEDGE_DATA.trainingVideos[0];
-            if (fallbackMod) {
-                this.selectCurriculumModule(fallbackMod.id);
-            }
+        // 4. Switch back to remaining video
+        const fallbackMod = window.SURGEDGE_DATA.trainingVideos[0];
+        if (fallbackMod) {
+            this.selectCurriculumModule(fallbackMod.id);
         }
 
         if (window.showAppToast) {
-            window.showAppToast('🗑 Operative video permanently deleted from library.', 'warning');
+            window.showAppToast('🗑 Operative video deleted from library.', 'warning');
         }
     }
 
@@ -401,9 +445,9 @@ class SurgicalAcademyEngine {
         const toolBtns = document.querySelectorAll('.curriculum-tool-btn');
         toolBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                if (btn.id === 'studioClearCanvasBtn' || btn.id === 'studioExportSnapshotBtn') return;
+                if (btn.id === 'studioClearCanvasBtn' || btn.id === 'studioExportSnapshotBtn' || btn.classList.contains('upload-tool-btn')) return;
                 toolBtns.forEach(b => {
-                    if (b.id !== 'studioClearCanvasBtn' && b.id !== 'studioExportSnapshotBtn') {
+                    if (b.id !== 'studioClearCanvasBtn' && b.id !== 'studioExportSnapshotBtn' && !b.classList.contains('upload-tool-btn')) {
                         b.classList.remove('active');
                     }
                 });
@@ -466,31 +510,13 @@ class SurgicalAcademyEngine {
         }
     }
 
-    /* --- DIRECT VIDEO UPLOAD ENGINE & INDEXED-DB PERSISTENCE --- */
+    /* --- DIRECT VIDEO UPLOAD ENGINE & IMMEDIATE PLAYBACK --- */
     setupCurriculumDirectUpload() {
         const quickInput = document.getElementById('curriculumQuickUploadInput');
-        const quickBtn = document.getElementById('curriculumQuickUploadBtn');
-        const browseBtn = document.getElementById('curriculumBrowseBtn');
-        const dropBanner = document.getElementById('curriculumDropBanner');
         const playerViewport = document.querySelector('.curriculum-player-viewport');
 
-        if (quickBtn && quickInput) {
-            quickBtn.addEventListener('click', () => quickInput.click());
-        }
-        if (browseBtn && quickInput) {
-            browseBtn.addEventListener('click', () => quickInput.click());
-        }
-        if (dropBanner && quickInput) {
-            dropBanner.addEventListener('click', (e) => {
-                if (e.target !== browseBtn) quickInput.click();
-            });
-        }
-
-        const handleVideoFile = async (file) => {
-            if (!file || (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|avi|mkv|ogg)$/i))) {
-                if (window.showAppToast) window.showAppToast('Please select a valid operative video file (.mp4, .webm, .mov).', 'error');
-                return;
-            }
+        const handleVideoFile = (file) => {
+            if (!file) return;
 
             const objectUrl = URL.createObjectURL(file);
             const fileNameClean = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
@@ -505,7 +531,9 @@ class SurgicalAcademyEngine {
                 duration: 'Auto-Calibrated',
                 description: `Operative video file: ${file.name} (${fileSizeMB} MB). Persisted in IndexedDB with interactive AR telestration, timeline stepping, and procedural chapters.`,
                 videoUrl: objectUrl,
-                blob: file, // Store real file blob into IndexedDB
+                blob: file,
+                fileName: file.name,
+                fileSize: file.size,
                 thumbnail: 'assets/images/orthopedic_training_ar.jpg',
                 isUploaded: true,
                 createdAt: Date.now(),
@@ -517,33 +545,28 @@ class SurgicalAcademyEngine {
                 ]
             };
 
-            // 1. Save Permanently to IndexedDB (Persists across page refresh!)
-            await SurgEdgeDB.save(newModule);
-
-            // 2. Prepend to catalog in memory
+            // 1. Immediately insert into in-memory catalog
             if (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos) {
                 window.SURGEDGE_DATA.trainingVideos.unshift(newModule);
             }
 
-            // 3. Render and play immediately
+            // 2. Immediately render catalog and load into player
             this.renderCurriculumCatalog();
-            this.selectCurriculumModule(newModule.id);
+            this.loadCurriculumModule(newModule);
 
-            if (this.video) {
-                this.video.src = objectUrl;
-                this.video.load();
-                this.video.play().then(() => {
-                    const playBtn = document.getElementById('studioPlayBtn');
-                    if (playBtn) {
-                        playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-                    }
-                    this.isPlaying = true;
-                }).catch(() => {});
-            }
+            // 3. Persist in background to IndexedDB
+            SurgEdgeDB.save(newModule).then((saved) => {
+                console.log('Video persisted to IndexedDB:', saved);
+            }).catch((err) => {
+                console.warn('IndexedDB background save error:', err);
+            });
 
             if (window.showAppToast) {
-                window.showAppToast(`🎉 Video "${file.name}" saved permanently and loaded!`, 'success');
+                window.showAppToast(`🎉 Video "${file.name}" loaded and saved to library!`, 'success');
             }
+
+            // Reset input so re-selecting same file works
+            if (quickInput) quickInput.value = '';
         };
 
         if (quickInput) {
@@ -554,24 +577,23 @@ class SurgicalAcademyEngine {
             });
         }
 
-        // Drag & Drop onto drop banner and player
-        [dropBanner, playerViewport].forEach(zone => {
-            if (!zone) return;
-            zone.addEventListener('dragover', (e) => {
+        // Drag & Drop onto player
+        if (playerViewport) {
+            playerViewport.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                zone.classList.add('dragover');
+                playerViewport.classList.add('dragover');
             });
-            zone.addEventListener('dragleave', () => {
-                zone.classList.remove('dragover');
+            playerViewport.addEventListener('dragleave', () => {
+                playerViewport.classList.remove('dragover');
             });
-            zone.addEventListener('drop', (e) => {
+            playerViewport.addEventListener('drop', (e) => {
                 e.preventDefault();
-                zone.classList.remove('dragover');
+                playerViewport.classList.remove('dragover');
                 if (e.dataTransfer.files && e.dataTransfer.files[0]) {
                     handleVideoFile(e.dataTransfer.files[0]);
                 }
             });
-        });
+        }
     }
 
     /* --- VIDEO UPLOAD STUDIO (FACULTY FORM) --- */
@@ -588,7 +610,6 @@ class SurgicalAcademyEngine {
 
         if (!dropzone || !fileInput) return;
 
-        // Click to browse
         dropzone.addEventListener('click', (e) => {
             if (e.target.closest('#removeUploadedFileBtn')) return;
             if (!this.uploadedVideoFile) {
@@ -596,7 +617,6 @@ class SurgicalAcademyEngine {
             }
         });
 
-        // Drag & drop events
         ['dragenter', 'dragover'].forEach(eventName => {
             dropzone.addEventListener(eventName, (e) => {
                 e.preventDefault();
@@ -746,12 +766,10 @@ class SurgicalAcademyEngine {
             ]
         };
 
-        // 1. Save Permanently to IndexedDB
         if (this.uploadedVideoFile) {
             await SurgEdgeDB.save(newModule);
         }
 
-        // 2. Prepend to catalog in memory
         if (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos) {
             window.SURGEDGE_DATA.trainingVideos.unshift(newModule);
         }
@@ -859,4 +877,3 @@ if (document.readyState === 'loading') {
 } else {
     window.initSurgicalAcademy();
 }
-
