@@ -1,8 +1,82 @@
 /**
  * SurgEdge Platform - Surgical Education Academy & Faculty Dashboard Engine
- * Standardized Curriculum Player, AR Telestration, Video Upload Studio, and Faculty Tele-Guidance Dashboard
+ * Standardized Curriculum Player, AR Telestration, IndexedDB Video Persistence, and Tele-Guidance Dashboard
  */
 
+// ═══════════════════════════════════════════════════════════════════════════
+// INDEXED-DB PERSISTENT SURGICAL VIDEO STORAGE ENGINE
+// ═══════════════════════════════════════════════════════════════════════════
+const SurgEdgeDB = {
+    dbName: 'SurgEdge_Operative_Videos_DB',
+    storeName: 'uploaded_videos',
+    version: 1,
+
+    open() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(this.dbName, this.version);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(this.storeName)) {
+                    db.createObjectStore(this.storeName, { keyPath: 'id' });
+                }
+            };
+            req.onsuccess = (e) => resolve(e.target.result);
+            req.onerror = (e) => reject(e.target.error);
+        });
+    },
+
+    async save(record) {
+        try {
+            const db = await this.open();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(this.storeName, 'readwrite');
+                const store = tx.objectStore(this.storeName);
+                const req = store.put(record);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => reject(req.error);
+            });
+        } catch (err) {
+            console.error('SurgEdgeDB save error:', err);
+            return false;
+        }
+    },
+
+    async getAll() {
+        try {
+            const db = await this.open();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(this.storeName, 'readonly');
+                const store = tx.objectStore(this.storeName);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => reject(req.error);
+            });
+        } catch (err) {
+            console.error('SurgEdgeDB getAll error:', err);
+            return [];
+        }
+    },
+
+    async delete(id) {
+        try {
+            const db = await this.open();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(this.storeName, 'readwrite');
+                const store = tx.objectStore(this.storeName);
+                const req = store.delete(id);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => reject(req.error);
+            });
+        } catch (err) {
+            console.error('SurgEdgeDB delete error:', err);
+            return false;
+        }
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SURGICAL ACADEMY ENGINE
+// ═══════════════════════════════════════════════════════════════════════════
 class SurgicalAcademyEngine {
     constructor() {
         this.video = null;
@@ -23,9 +97,12 @@ class SurgicalAcademyEngine {
         this.uploadedVideoDuration = "15:00";
     }
 
-    init() {
+    async init() {
         this.video = document.getElementById('curriculumVideoPlayer');
         this.canvas = document.getElementById('curriculumTelestrationCanvas');
+
+        // 1. Load Persisted Uploaded Videos from IndexedDB into Catalog
+        await this.restorePersistedVideosFromDB();
 
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
@@ -33,7 +110,7 @@ class SurgicalAcademyEngine {
             this.setupCanvasDrawing();
             this.renderCurriculumCatalog();
 
-            // Load first default surgical module (AR Knee Surgery)
+            // Load first available surgical module
             const defaultMod = (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos && window.SURGEDGE_DATA.trainingVideos[0]);
             if (defaultMod) {
                 this.loadCurriculumModule(defaultMod);
@@ -46,6 +123,29 @@ class SurgicalAcademyEngine {
         this.setupFacultyDashboard();
         this.setupVideoUploadZone();
         this.setupAuthModalListeners();
+    }
+
+    async restorePersistedVideosFromDB() {
+        if (!window.SURGEDGE_DATA) return;
+        if (!window.SURGEDGE_DATA.trainingVideos) window.SURGEDGE_DATA.trainingVideos = [];
+
+        try {
+            const savedRecords = await SurgEdgeDB.getAll();
+            if (savedRecords && savedRecords.length > 0) {
+                savedRecords.forEach(rec => {
+                    // Recreate active Blob URL from stored IndexedDB Blob
+                    if (rec.blob) {
+                        rec.videoUrl = URL.createObjectURL(rec.blob);
+                    }
+                    // Avoid duplicate insertion
+                    if (!window.SURGEDGE_DATA.trainingVideos.some(v => v.id === rec.id)) {
+                        window.SURGEDGE_DATA.trainingVideos.unshift(rec);
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('Could not restore videos from IndexedDB:', e);
+        }
     }
 
     resizeCanvas() {
@@ -166,6 +266,7 @@ class SurgicalAcademyEngine {
 
         container.innerHTML = videos.map((mod, idx) => `
             <div class="curriculum-module-card ${idx === 0 ? 'active' : ''}" onclick="window.videoStudio.selectCurriculumModule('${mod.id}')" data-id="${mod.id}">
+                ${mod.isUploaded ? `<button class="module-delete-btn" onclick="event.stopPropagation(); window.videoStudio.deleteUploadedVideo('${mod.id}')" title="Delete this uploaded video">🗑</button>` : ''}
                 <div class="module-thumb-wrapper">
                     <img src="${mod.thumbnail || 'assets/images/orthopedic_training_ar.jpg'}" alt="${mod.title}" class="module-thumb-img">
                     <span class="module-duration-badge">${mod.duration || '15:00'}</span>
@@ -219,7 +320,9 @@ class SurgicalAcademyEngine {
             this.isPlaying = false;
         }
 
-        if (titleEl) titleEl.textContent = mod.title;
+        if (titleEl) {
+            titleEl.innerHTML = `${mod.title} ${mod.isUploaded ? `<button class="btn-delete-case" onclick="window.videoStudio.deleteUploadedVideo('${mod.id}')">🗑 Delete Case</button>` : ''}`;
+        }
         if (specEl) specEl.textContent = `${mod.specialty} • ${mod.author}`;
         if (descEl) descEl.textContent = mod.description;
 
@@ -233,6 +336,38 @@ class SurgicalAcademyEngine {
         }
 
         this.clearCanvas();
+    }
+
+    /* --- DELETE UPLOADED VIDEO ENGINE --- */
+    async deleteUploadedVideo(modId) {
+        if (!confirm('Are you sure you want to delete this operative video from your library?')) return;
+
+        // 1. Delete from IndexedDB
+        await SurgEdgeDB.delete(modId);
+
+        // 2. Remove from local trainingVideos array
+        const idx = window.SURGEDGE_DATA.trainingVideos.findIndex(v => v.id === modId);
+        if (idx !== -1) {
+            const removed = window.SURGEDGE_DATA.trainingVideos.splice(idx, 1)[0];
+            if (removed && removed.videoUrl && removed.videoUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(removed.videoUrl);
+            }
+        }
+
+        // 3. Re-render catalog
+        this.renderCurriculumCatalog();
+
+        // 4. If the deleted video was currently active, switch to first available video
+        if (this.activeModuleData && this.activeModuleData.id === modId) {
+            const fallbackMod = window.SURGEDGE_DATA.trainingVideos[0];
+            if (fallbackMod) {
+                this.selectCurriculumModule(fallbackMod.id);
+            }
+        }
+
+        if (window.showAppToast) {
+            window.showAppToast('🗑 Operative video permanently deleted from library.', 'warning');
+        }
     }
 
     setupCanvasDrawing() {
@@ -331,7 +466,7 @@ class SurgicalAcademyEngine {
         }
     }
 
-    /* --- DIRECT VIDEO UPLOAD ENGINE --- */
+    /* --- DIRECT VIDEO UPLOAD ENGINE & INDEXED-DB PERSISTENCE --- */
     setupCurriculumDirectUpload() {
         const quickInput = document.getElementById('curriculumQuickUploadInput');
         const quickBtn = document.getElementById('curriculumQuickUploadBtn');
@@ -351,7 +486,7 @@ class SurgicalAcademyEngine {
             });
         }
 
-        const handleVideoFile = (file) => {
+        const handleVideoFile = async (file) => {
             if (!file || (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|avi|mkv|ogg)$/i))) {
                 if (window.showAppToast) window.showAppToast('Please select a valid operative video file (.mp4, .webm, .mov).', 'error');
                 return;
@@ -368,10 +503,12 @@ class SurgicalAcademyEngine {
                 specialty: 'Clinical Operative Case',
                 author: 'Local Attending Surgeon',
                 duration: 'Auto-Calibrated',
-                description: `Operative video file: ${file.name} (${fileSizeMB} MB). Loaded with interactive AR telestration, timeline stepping, and procedural chapters.`,
+                description: `Operative video file: ${file.name} (${fileSizeMB} MB). Persisted in IndexedDB with interactive AR telestration, timeline stepping, and procedural chapters.`,
                 videoUrl: objectUrl,
+                blob: file, // Store real file blob into IndexedDB
                 thumbnail: 'assets/images/orthopedic_training_ar.jpg',
                 isUploaded: true,
+                createdAt: Date.now(),
                 chapters: [
                     { time: '00:00', title: '1. Incision & Exposure' },
                     { time: '01:30', title: '2. Operative Field Isolation' },
@@ -380,10 +517,15 @@ class SurgicalAcademyEngine {
                 ]
             };
 
+            // 1. Save Permanently to IndexedDB (Persists across page refresh!)
+            await SurgEdgeDB.save(newModule);
+
+            // 2. Prepend to catalog in memory
             if (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos) {
                 window.SURGEDGE_DATA.trainingVideos.unshift(newModule);
             }
 
+            // 3. Render and play immediately
             this.renderCurriculumCatalog();
             this.selectCurriculumModule(newModule.id);
 
@@ -400,7 +542,7 @@ class SurgicalAcademyEngine {
             }
 
             if (window.showAppToast) {
-                window.showAppToast(`🎉 Video "${file.name}" loaded into AR Player!`, 'success');
+                window.showAppToast(`🎉 Video "${file.name}" saved permanently and loaded!`, 'success');
             }
         };
 
@@ -432,7 +574,7 @@ class SurgicalAcademyEngine {
         });
     }
 
-    /* --- VIDEO UPLOAD STUDIO --- */
+    /* --- VIDEO UPLOAD STUDIO (FACULTY FORM) --- */
     setupVideoUploadZone() {
         const dropzone = document.getElementById('videoUploadDropzone');
         const fileInput = document.getElementById('pubVideoFileInput');
@@ -479,24 +621,31 @@ class SurgicalAcademyEngine {
         });
 
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files && e.target.files.length > 0) {
-                this.handleVideoFileUpload(e.target.files[0]);
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                this.handleVideoFileUpload(files[0]);
             }
         });
 
         if (removeBtn) {
             removeBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.resetUploadedVideo();
+                this.clearUploadedFileState();
+            });
+        }
+
+        const publishBtn = document.getElementById('publishVideoSubmitBtn');
+        if (publishBtn) {
+            publishBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handlePublishCurriculumModule();
             });
         }
     }
 
     handleVideoFileUpload(file) {
         if (!file.type.startsWith('video/')) {
-            if (window.showAppToast) {
-                window.showAppToast('Please select a valid surgical video file (MP4, WebM, MOV).', 'error');
-            }
+            if (window.showAppToast) window.showAppToast('Please select a valid operative video file.', 'error');
             return;
         }
 
@@ -509,192 +658,193 @@ class SurgicalAcademyEngine {
         const previewFileName = document.getElementById('previewFileName');
         const previewFileMeta = document.getElementById('previewFileMeta');
         const previewFormatTag = document.getElementById('previewFormatTag');
-        const titleInput = document.getElementById('pubLectureTitle');
 
         if (promptContent) promptContent.style.display = 'none';
         if (previewCard) previewCard.style.display = 'flex';
 
         if (previewFileName) previewFileName.textContent = file.name;
-        if (previewFormatTag) {
-            const ext = file.name.split('.').pop() || 'MP4';
-            previewFormatTag.textContent = ext.toUpperCase();
-        }
+        if (previewFileMeta) previewFileMeta.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB · Ready to Publish`;
+        if (previewFormatTag) previewFormatTag.textContent = file.type.split('/')[1]?.toUpperCase() || 'MP4';
 
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-
-        // Auto-fill title if empty
-        if (titleInput && !titleInput.value) {
-            const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
-            titleInput.value = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
-        }
-
-        // Load preview and extract duration & frame thumbnail
         if (previewVideo) {
             previewVideo.src = this.uploadedVideoBlobUrl;
             previewVideo.onloadedmetadata = () => {
-                const durFormatted = this.formatTime(previewVideo.duration);
-                this.uploadedVideoDuration = durFormatted;
+                const dur = this.formatTime(previewVideo.duration);
+                this.uploadedVideoDuration = dur;
                 if (previewFileMeta) {
-                    previewFileMeta.textContent = `${sizeMB} MB • ${previewVideo.videoWidth}x${previewVideo.videoHeight} • ${durFormatted} duration`;
+                    previewFileMeta.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB · ${dur} Duration`;
                 }
-
-                // Capture snapshot for thumbnail
-                try {
-                    previewVideo.currentTime = Math.min(1.0, previewVideo.duration / 2);
-                } catch(e) {}
             };
+        }
 
-            previewVideo.onseeked = () => {
-                try {
-                    const snapCanvas = document.createElement('canvas');
-                    snapCanvas.width = 320;
-                    snapCanvas.height = 180;
-                    const snapCtx = snapCanvas.getContext('2d');
-                    snapCtx.drawImage(previewVideo, 0, 0, 320, 180);
-                    this.uploadedVideoThumbnail = snapCanvas.toDataURL('image/jpeg', 0.85);
-                } catch(e) {}
-            };
+        const titleInput = document.getElementById('pubVideoTitle');
+        if (titleInput && !titleInput.value) {
+            const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+            titleInput.value = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
         }
 
         if (window.showAppToast) {
-            window.showAppToast(`Video "${file.name}" ready for academy publishing.`, 'success');
+            window.showAppToast(`Video ${file.name} staged for publishing.`, 'info');
         }
     }
 
-    resetUploadedVideo() {
+    clearUploadedFileState() {
+        if (this.uploadedVideoBlobUrl) {
+            URL.revokeObjectURL(this.uploadedVideoBlobUrl);
+            this.uploadedVideoBlobUrl = null;
+        }
         this.uploadedVideoFile = null;
-        this.uploadedVideoBlobUrl = null;
-        this.uploadedVideoThumbnail = null;
-        this.uploadedVideoDuration = "15:00";
 
-        const fileInput = document.getElementById('pubVideoFileInput');
         const promptContent = document.getElementById('uploadDropzonePrompt');
         const previewCard = document.getElementById('uploadFilePreviewCard');
         const previewVideo = document.getElementById('uploadPreviewVideoEl');
+        const fileInput = document.getElementById('pubVideoFileInput');
 
         if (fileInput) fileInput.value = '';
-        if (previewVideo) previewVideo.removeAttribute('src');
         if (promptContent) promptContent.style.display = 'flex';
         if (previewCard) previewCard.style.display = 'none';
+        if (previewVideo) {
+            previewVideo.removeAttribute('src');
+            previewVideo.load();
+        }
     }
 
-    /* --- FACULTY DASHBOARD & PUBLISHING STUDIO --- */
+    async handlePublishCurriculumModule() {
+        const titleInput = document.getElementById('pubVideoTitle');
+        const specSelect = document.getElementById('pubVideoSpecialty');
+        const authorInput = document.getElementById('pubVideoInstructor');
+        const descInput = document.getElementById('pubVideoDescription');
+
+        const title = titleInput ? titleInput.value.trim() : '';
+        const specialty = specSelect ? specSelect.value : 'General Surgery';
+        const author = authorInput ? authorInput.value.trim() : 'Attending Surgeon';
+        const description = descInput ? descInput.value.trim() : 'Accredited operative case lecture.';
+
+        if (!title) {
+            if (window.showAppToast) window.showAppToast('Please enter an operative video title.', 'error');
+            return;
+        }
+
+        const newId = 'module-' + Date.now();
+        const newModule = {
+            id: newId,
+            title: title,
+            specialty: specialty,
+            author: author,
+            duration: this.uploadedVideoDuration || '15:00',
+            description: description,
+            videoUrl: this.uploadedVideoBlobUrl || '',
+            blob: this.uploadedVideoFile || null,
+            thumbnail: 'assets/images/orthopedic_training_ar.jpg',
+            isUploaded: true,
+            createdAt: Date.now(),
+            chapters: [
+                { time: '00:00', title: '1. Incision & Sterile Prep' },
+                { time: '02:00', title: '2. Anatomical Exposure' },
+                { time: '05:30', title: '3. Main Operative Technique' },
+                { time: '09:45', title: '4. Verification & Closure' }
+            ]
+        };
+
+        // 1. Save Permanently to IndexedDB
+        if (this.uploadedVideoFile) {
+            await SurgEdgeDB.save(newModule);
+        }
+
+        // 2. Prepend to catalog in memory
+        if (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos) {
+            window.SURGEDGE_DATA.trainingVideos.unshift(newModule);
+        }
+
+        this.renderCurriculumCatalog();
+        this.selectCurriculumModule(newId);
+
+        if (titleInput) titleInput.value = '';
+        if (authorInput) authorInput.value = '';
+        if (descInput) descInput.value = '';
+        this.clearUploadedFileState();
+
+        const curriculumSec = document.getElementById('curriculum');
+        if (curriculumSec) {
+            curriculumSec.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        if (window.showAppToast) {
+            window.showAppToast(`🎉 "${title}" published permanently to Curriculum Library!`, 'success');
+        }
+    }
+
+    /* --- FACULTY GATE & MODAL CONTROLS --- */
     setupFacultyDashboard() {
-        const publishForm = document.getElementById('facultyPublishLectureForm');
-        if (publishForm) {
-            publishForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const title = document.getElementById('pubLectureTitle')?.value || "Advanced Surgical Lecture";
-                const spec = document.getElementById('pubSpecialty')?.value || "Orthopedic Surgery";
-                const cme = document.getElementById('pubCmeHours')?.value || "3.0 AMA PRA Cat. 1";
-                const objectives = document.getElementById('pubLearningObjectives')?.value || "";
+        const unlockBtn = document.getElementById('facultyGateUnlockBtn');
+        const passInput = document.getElementById('facultyGatePasscode');
 
-                const chaptersList = objectives
-                    ? objectives.split('\n').filter(o => o.trim()).map((obj, idx) => ({
-                        time: `0${idx * 3}:00`,
-                        title: obj.trim()
-                    }))
-                    : [
-                        { time: "00:00", title: "Procedural Anatomy & Incision Planning" },
-                        { time: "04:30", title: "Operative Execution & Landmark Guidance" },
-                        { time: "11:00", title: "Hemostasis & Closure Verification" }
-                    ];
-
-                const newLecture = {
-                    id: `mod-${Date.now()}`,
-                    title: title,
-                    specialty: spec,
-                    duration: this.uploadedVideoDuration || "15:00",
-                    author: "Hamdi Abdalkareem Abdalla (Faculty)",
-                    thumbnail: this.uploadedVideoThumbnail || "assets/images/orthopedic_training_ar.jpg",
-                    videoUrl: this.uploadedVideoBlobUrl || null,
-                    description: `Accredited ${spec} procedural curriculum lecture (${cme}). Standardized operative guidance developed for low-resource district hospitals.`,
-                    chapters: chaptersList
-                };
-
-                if (window.SURGEDGE_DATA && window.SURGEDGE_DATA.trainingVideos) {
-                    window.SURGEDGE_DATA.trainingVideos.unshift(newLecture);
-                    this.renderCurriculumCatalog();
-                    this.selectCurriculumModule(newLecture.id);
+        if (unlockBtn && passInput) {
+            unlockBtn.addEventListener('click', () => {
+                const val = passInput.value.trim();
+                if (val === 'slingshot2026') {
+                    this.unlockFacultyDashboard();
+                } else {
+                    if (window.showAppToast) window.showAppToast('Invalid faculty passcode. Use slingshot2026', 'error');
                 }
+            });
 
-                // Add to Activity Feed
-                const activityFeed = document.getElementById('facultyActivityFeed');
-                if (activityFeed) {
-                    const li = document.createElement('li');
-                    li.className = 'activity-item';
-                    li.innerHTML = `
-                        <div class="activity-dot blue"></div>
-                        <div class="activity-body">
-                            <span class="activity-text"><strong>${title}</strong> (${spec}) published to Academy</span>
-                            <span class="activity-time">Just now • Hamdi Abdalkareem</span>
-                        </div>
-                    `;
-                    activityFeed.insertBefore(li, activityFeed.firstChild);
-                }
-
-                if (window.showAppToast) {
-                    window.showAppToast(`🎉 Lecture "${title}" published & loaded into Curriculum Player!`, 'success');
-                }
-
-                // Reset form & upload zone
-                publishForm.reset();
-                this.resetUploadedVideo();
-
-                // Scroll up smoothly to curriculum to view the loaded lecture
-                const curriculumSection = document.getElementById('curriculum');
-                if (curriculumSection) {
-                    curriculumSection.scrollIntoView({ behavior: 'smooth' });
-                }
+            passInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') unlockBtn.click();
             });
         }
     }
 
-    /* --- FACULTY AUTHENTICATION MODAL --- */
+    unlockFacultyDashboard() {
+        this.isFacultyLoggedIn = true;
+        const gate = document.getElementById('facultyLockedGate');
+        const activeArea = document.getElementById('facultyDashboardActive');
+
+        if (gate) gate.style.display = 'none';
+        if (activeArea) activeArea.style.display = 'block';
+
+        if (window.showAppToast) {
+            window.showAppToast('Faculty portal unlocked. Access granted.', 'success');
+        }
+    }
+
     setupAuthModalListeners() {
-        const authModal = document.getElementById('ownerAuthModal');
-        const authForm = document.getElementById('ownerAuthForm');
-        const closeBtn = document.getElementById('closeAuthModalBtn');
-        const quickLoginBtn = document.getElementById('quickFacultyLoginBtn');
+        const modal = document.getElementById('facultyLoginModal');
+        const openBtns = document.querySelectorAll('.open-faculty-modal-btn');
+        const closeBtn = document.getElementById('closeFacultyModalBtn');
+        const modalPass = document.getElementById('modalFacultyPasscode');
+        const modalSubmit = document.getElementById('modalFacultyLoginSubmit');
 
-        if (closeBtn && authModal) {
-            closeBtn.addEventListener('click', () => authModal.classList.remove('active'));
-        }
-
-        if (quickLoginBtn) {
-            quickLoginBtn.addEventListener('click', () => {
-                this.isFacultyLoggedIn = true;
-                if (authModal) authModal.classList.remove('active');
-                if (window.showAppToast) window.showAppToast('Faculty Access Verified: Welcome Hamdi Abdalkareem (Faculty Admin).', 'success');
-                const dash = document.getElementById('faculty-dashboard');
-                if (dash) {
-                    dash.style.display = 'block';
-                    dash.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        }
-
-        if (authForm) {
-            authForm.addEventListener('submit', (e) => {
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.isFacultyLoggedIn = true;
-                if (authModal) authModal.classList.remove('active');
-                if (window.showAppToast) window.showAppToast('Faculty Authentication Successful.', 'success');
-                const dash = document.getElementById('faculty-dashboard');
-                if (dash) {
-                    dash.style.display = 'block';
-                    dash.scrollIntoView({ behavior: 'smooth' });
+                if (modal) modal.classList.add('active');
+            });
+        });
+
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+        }
+
+        if (modalSubmit && modalPass) {
+            modalSubmit.addEventListener('click', () => {
+                if (modalPass.value.trim() === 'slingshot2026') {
+                    if (modal) modal.classList.remove('active');
+                    this.unlockFacultyDashboard();
+                    const dashSec = document.getElementById('facultyDashboard');
+                    if (dashSec) dashSec.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    if (window.showAppToast) window.showAppToast('Incorrect passcode. Use slingshot2026', 'error');
                 }
             });
         }
     }
+}
 
-    openAuthModal() {
-        if (window.openFacultyModal) window.openFacultyModal();
+// Global Init
+window.initSurgicalAcademy = function() {
+    if (!window.videoStudio) {
+        window.videoStudio = new SurgicalAcademyEngine();
+        window.videoStudio.init();
     }
-}
-
-// Global initialization
-if (typeof window !== "undefined") {
-    window.SurgicalVideoStudio = SurgicalAcademyEngine;
-}
+};
