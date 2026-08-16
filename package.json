@@ -1,0 +1,24 @@
+{
+  "name": "surgedge",
+  "version": "2.5.0",
+  "description": "SurgEdge - Surgical Guidance Without Borders. Intra-Operative Tele-Guidance, Standardized Curriculum, & 360° OR Simulation Platform.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "surgery",
+    "tele-guidance",
+    "medical-education",
+    "babson-college",
+    "global-surgery",
+    "webrtc",
+    "threejs",
+    "ar-simulation"
+  ],
+  "author": "Hamdi Abdalkareem Abdalla (Babson College Global Surgery Slingshot & Amodisc Ltd)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

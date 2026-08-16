@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SurgEdge — Surgical education & real-time tele-guidance for rural clinicians. Babson College Global Surgery Slingshot.">
+    <title>SurgEdge | Surgical Education & Tele-Guidance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+<header class="site-header">
+    <div class="container nav-container">
+        <a href="#hero" class="brand-logo-wrapper">
+            <svg class="logo-icon-svg" viewBox="0 0 50 50" fill="none">
+                <circle cx="25" cy="25" r="23" stroke="#0F4C81" stroke-width="2" fill="#F0F9FF"/>
+                <path d="M12 28C16 22 22 22 26 28C30 34 36 34 40 28" stroke="#0284C7" stroke-width="3" stroke-linecap="round"/>
+                <path d="M10 33C14 27 20 27 24 33C28 39 34 39 38 33" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" opacity="0.75"/>
+                <path d="M18 19C20 16 24 16 26 19" stroke="#0F4C81" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="brand-name">SurgEdge</span>
+        </a>
+
+        <ul class="nav-links" id="navLinksContainer">
+            <li><a href="#hero" class="nav-link active">Home</a></li>
+            <li><a href="#curriculum" class="nav-link">Curriculum</a></li>
+            <li><a href="#simulation" class="nav-link">3D Simulation</a></li>
+            <li><a href="#tele-guidance" class="nav-link">Tele-Guidance</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="btn-faculty-icon" id="navFacultyLoginBtn" onclick="openFacultyModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;display:inline-block;vertical-align:-1px;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Admin Portal
+            </button>
+            <a href="#tele-guidance" class="btn btn-primary btn-sm">Book Demo</a>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+        </div>
+    </div>
+</header>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero-cinematic-wrapper" id="hero">
+    <div class="hero-gradient-overlay"></div>
+    <div class="container hero-inner-container">
+        <div class="hero-text-card">
+            <div class="hero-badge-academic">
+                <span class="badge-dot"></span>
+                Babson College Global Surgery Slingshot · Amodisc Ltd
+            </div>
+            <h1 class="hero-main-title">Expert Surgical Training &amp; Tele-Guidance</h1>
+            <p class="hero-main-subtitle">Connecting rural surgeons to board-certified faculty — live, intra-operative, anywhere in the world.</p>
+            <div class="hero-cta-group">
+                <a href="#tele-guidance" class="btn btn-hero-white btn-lg">Book a Live Demo →</a>
+                <a href="#curriculum" class="btn btn-hero-trans btn-lg">View Curriculum →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="hero-scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow">↓</div>
+    </div>
+</section>
+
+<!-- ═══════════════════ IMPACT STATS BAR ═══════════════════ -->
+<div class="impact-stats-bar">
+    <div class="container">
+        <div class="impact-stats-inner">
+            <div class="impact-stat">
+                <span class="impact-val">5B+</span>
+                <span class="impact-lbl">People lack surgical access globally</span>
+            </div>
+            <div class="impact-divider"></div>
+            <div class="impact-stat">
+                <span class="impact-val">840+</span>
+                <span class="impact-lbl">Rural consultations guided</span>
+            </div>
+            <div class="impact-divider"></div>
+            <div class="impact-stat">
+                <span class="impact-val">12</span>
+                <span class="impact-lbl">Accredited surgical modules</span>
+            </div>
+            <div class="impact-divider"></div>
+            <div class="impact-stat">
+                <span class="impact-val">&lt;30 kbps</span>
+                <span class="impact-lbl">Operates on minimal bandwidth</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ HIGHLIGHT CARDS ═══════════════════ -->
+<div class="container hero-highlights-strip">
+    <div class="highlights-grid">
+        <div class="highlight-card">
+            <div class="highlight-icon-ring navy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12.01" y2="12"/></svg>
+            </div>
+            <h3>Board-Certified Faculty</h3>
+            <p>Accredited subspecialists delivering live operative guidance and real-time case debriefs.</p>
+        </div>
+        <div class="highlight-card">
+            <div class="highlight-icon-ring blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            </div>
+            <h3>Low-Bandwidth AR</h3>
+            <p>WebRTC tele-mentoring at under 30 kbps — works on any smartphone or basic tablet.</p>
+        </div>
+        <div class="highlight-card">
+            <div class="highlight-icon-ring teal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <h3>Standardized Curriculum</h3>
+            <p>Modular operative video lectures built on UNITAR / SurgHub educational frameworks.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ CURRICULUM ═══════════════════ -->
+<section class="section-wrapper bg-subtle" id="curriculum">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Surgical Education Academy</span>
+            <h2 class="section-title">Procedural Curriculum Library</h2>
+            <p class="section-subtitle">Faculty-curated operative video lectures with AR telestration and CME certification.</p>
+        </div>
+
+        <div class="curriculum-layout">
+            <!-- Player -->
+            <div class="curriculum-player-card">
+                <div class="curriculum-player-viewport">
+                    <video id="curriculumVideoPlayer" playsinline poster="assets/images/orthopedic_training_ar.jpg"></video>
+                    <canvas id="curriculumTelestrationCanvas"></canvas>
+
+                    <!-- Overlay: AR badge top-left -->
+                    <div class="player-ar-badge">🔴 AR Live</div>
+
+                    <div class="curriculum-canvas-toolbar">
+                        <button class="curriculum-tool-btn active" data-tool="pen">✏ Draw</button>
+                        <div class="curriculum-color-swatch active" data-color="#38BDF8" style="background:#38BDF8" title="Sky Blue"></div>
+                        <div class="curriculum-color-swatch" data-color="#0F4C81" style="background:#0F4C81" title="Navy"></div>
+                        <div class="curriculum-color-swatch" data-color="#F87171" style="background:#F87171" title="Red"></div>
+                        <div class="curriculum-color-swatch" data-color="#FBBF24" style="background:#FBBF24" title="Amber"></div>
+                        <button class="curriculum-tool-btn" id="studioClearCanvasBtn" title="Clear">🗑</button>
+                        <button class="curriculum-tool-btn highlight-action" id="studioExportSnapshotBtn" title="Save snapshot">📸 Save</button>
+                    </div>
+                </div>
+
+                <!-- Playback Controls -->
+                <div class="curriculum-controls-bar">
+                    <div class="curriculum-playback-row">
+                        <button class="play-btn" id="studioPlayBtn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                        </button>
+                        <button class="btn-ctrl-sm" id="studioStepPrevBtn" title="−1 frame">◀◀</button>
+                        <button class="btn-ctrl-sm" id="studioStepNextBtn" title="+1 frame">▶▶</button>
+                        <span class="curriculum-timecode-display" id="studioTimeDisplay">00:00 / --:--</span>
+                        <div class="curriculum-speed-control">
+                            <label>Speed</label>
+                            <select id="studioSpeedSelect" class="speed-select">
+                                <option value="0.5">0.5×</option>
+                                <option value="1.0" selected>1×</option>
+                                <option value="1.5">1.5×</option>
+                                <option value="2.0">2×</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="seek-bar-wrapper">
+                        <input type="range" class="curriculum-seek-bar" id="studioSeekBar" min="0" max="100" value="0" step="0.1">
+                    </div>
+                </div>
+
+                <!-- Meta -->
+                <div class="curriculum-meta-box">
+                    <div class="meta-header">
+                        <div>
+                            <h3 id="studioVideoTitleDisplay">AR-Guided Knee Joint Realignment & Osteotomy</h3>
+                            <p class="curriculum-meta-sub" id="studioVideoSpecDisplay">Orthopedic Surgery · Dr. Elena Rostova, MD, FRCS</p>
+                        </div>
+                        <div class="cme-inline-badge">3.0 CME</div>
+                    </div>
+                    <p class="curriculum-meta-desc" id="studioVideoDescDisplay">Coronal plane mechanical axis correction with AR trajectory verification and distal femoral resection guidance.</p>
+                    <div class="curriculum-objectives-box">
+                        <h4>Learning Objectives</h4>
+                        <ul class="curriculum-objectives-list" id="studioObjectivesList">
+                            <li><span class="bullet-check">✓</span> Coronal landmark mapping before incision</li>
+                            <li><span class="bullet-check">✓</span> Bicortical pin placement in safe corridors</li>
+                            <li><span class="bullet-check">✓</span> Fluoroscopy-verified trial reduction</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="curriculum-sidebar-card">
+                <div class="cme-badge-card">
+                    <div class="cme-badge-icon">🎓</div>
+                    <div class="cme-badge-text">
+                        <h4>Accredited CME Module</h4>
+                        <p>AMA PRA Category 1 Credits™ on completion</p>
+                    </div>
+                </div>
+
+                <div class="curriculum-chapters-box">
+                    <div class="box-header-row">
+                        <h4>Procedural Steps</h4>
+                        <span class="hint-label">Tap to seek →</span>
+                    </div>
+                    <div class="curriculum-chapter-list" id="studioChapterList"></div>
+                </div>
+
+                <div class="curriculum-catalog-box">
+                    <div class="box-header-row">
+                        <h4 class="catalog-heading">Module Catalog</h4>
+                        <span class="module-count-tag" id="moduleCountTag">4 modules</span>
+                    </div>
+                    <div id="preloadedVideosList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ 3D SURGICAL SIMULATION ═══════════════════ -->
+<section class="section-wrapper bg-subtle" id="simulation">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Operating Room (OR) Studio</span>
+            <h2 class="section-title">3D Knee Joint Realignment &amp; AR Simulation</h2>
+            <p class="section-subtitle">Photorealistic operating room intra-operative simulation, multi-camera perspectives, and augmented reality resection guidance.</p>
+        </div>
+
+        <div class="simulation-layout">
+            <!-- Main OR Simulation Video & 360 AR Viewport -->
+            <div class="simulation-viewport-card">
+                <div class="or-sim-viewport" id="orSimViewport">
+                    <canvas id="orSim3DCanvas"></canvas>
+                    <canvas id="orSimTelestrationCanvas"></canvas>
+
+                    <!-- Top Left: OR Suite Status & Vital Telemetry -->
+                    <div class="or-sim-hud-top">
+                        <div class="or-sim-badge">
+                            <span class="or-pulse-dot"></span>
+                            <span>360° Interactive OR Suite</span>
+                        </div>
+                        <div class="or-vitals-pill">
+                            <span>HR: <strong>72 BPM</strong></span>
+                            <span class="vitals-sep">·</span>
+                            <span>BP: <strong>120/80</strong></span>
+                            <span class="vitals-sep">·</span>
+                            <span>SpO2: <strong>99%</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Top Right: 360° Controls, Camera Angles & AR Tools -->
+                    <div class="or-sim-header-actions">
+                        <div class="or-camera-toolbar">
+                            <button class="or-cam-btn active" id="or3DAutoOrbitBtn" title="360° Continuous Orbit">🔄 360° Orbit</button>
+                            <button class="or-cam-btn" id="or3DZoomInBtn" title="Zoom In closer">🔍+ Zoom In</button>
+                            <button class="or-cam-btn" id="or3DZoomOutBtn" title="Zoom Out wider">🔍- Zoom Out</button>
+                            <button class="or-cam-btn" id="or3DResetViewBtn" title="Reset 360° View">🎯 Reset</button>
+                            <button class="or-cam-btn" data-cam="or-wide" title="Wide Theatre View">🎥 OR Wide</button>
+                            <button class="or-cam-btn" data-cam="ar-align" title="AR Coronal Alignment View">🔬 AR Alignment</button>
+                        </div>
+
+                        <div class="or-sim-canvas-tools">
+                            <button class="or-sim-tool-btn" data-tool="pen">✏ Draw</button>
+                            <div class="or-sim-swatch" data-color="#38BDF8" style="background:#38BDF8" title="Sky Blue"></div>
+                            <div class="or-sim-swatch" data-color="#0F4C81" style="background:#0F4C81" title="Navy"></div>
+                            <div class="or-sim-swatch" data-color="#F87171" style="background:#F87171" title="Red"></div>
+                            <div class="or-sim-swatch" data-color="#FBBF24" style="background:#FBBF24" title="Amber"></div>
+                            <button class="or-sim-tool-btn" id="orSimClearCanvasBtn" title="Clear Canvas">🗑</button>
+                        </div>
+                    </div>
+
+                    <!-- Floating Intra-Operative Telemetry HUD -->
+                    <div class="or-sim-clinical-hud">
+                        <div class="or-hud-status-badge" id="orSimHudState">1. Anatomic Landmark Mapping</div>
+                        <div class="or-hud-metrics-row">
+                            <div class="or-hud-pill">
+                                <span class="or-lbl">Coronal Alignment:</span>
+                                <strong id="orSimHudAngle" class="or-val">Varus/Valgus: 0.2° · Flex/Ext: 3.0°</strong>
+                            </div>
+                            <div class="or-hud-pill">
+                                <span class="or-lbl">Resection Depth:</span>
+                                <strong id="orSimHudCut" class="or-val">9.0mm Distal / 8.5mm Tibial</strong>
+                            </div>
+                            <div class="or-hud-pill">
+                                <span class="or-lbl">Joint Balance:</span>
+                                <strong id="orSimHudBalance" class="or-val">99.8% Symmetrical Balance</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playback & Procedural Step Controls -->
+                <div class="or-sim-controls-bar">
+                    <div class="or-sim-playback-row">
+                        <button class="or-sim-play-btn" id="orSimPlayBtn">
+                            <span id="orSimPlayIcon">❚❚</span>
+                        </button>
+                        <div class="or-sim-progress-track" id="orSimProgressTrack">
+                            <div class="or-sim-progress-fill" id="orSimProgressFill" style="width: 0%;"></div>
+                        </div>
+                        <span class="or-sim-time" id="orSimTimeDisplay">00:00 / 08:00</span>
+                        
+                        <div class="or-sim-speed-wrap">
+                            <select class="or-sim-speed-select" id="orSimSpeedSelect">
+                                <option value="0.5">0.5×</option>
+                                <option value="1" selected>1.0×</option>
+                                <option value="1.5">1.5×</option>
+                                <option value="2">2.0×</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="or-sim-steps-row">
+                        <span class="or-steps-label">Procedural Stages:</span>
+                        <div class="or-sim-steps-pills">
+                            <button class="or-sim-step-btn active" data-step-index="0">1. Anatomic Mapping</button>
+                            <button class="or-sim-step-btn" data-step-index="1">2. Intramedullary Rod</button>
+                            <button class="or-sim-step-btn" data-step-index="2">3. Resection Plane</button>
+                            <button class="or-sim-step-btn" data-step-index="3">4. Joint Realignment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Details Sidebar -->
+            <div class="simulation-sidebar">
+                <div class="simulation-info-card">
+                    <h3 class="sim-card-title">Anatomical &amp; Resection Standards</h3>
+                    <p class="sim-card-desc">AR-guided distal femoral resection and coronal mechanical axis verification matching operative theater standards.</p>
+                    
+                    <div class="sim-spec-list">
+                        <div class="sim-spec-item">
+                            <span class="sim-spec-label">Anatomic Reference</span>
+                            <strong class="sim-spec-val">Transepicondylar Axis &amp; Whiteside's Line</strong>
+                        </div>
+                        <div class="sim-spec-item">
+                            <span class="sim-spec-label">Valgus Angle Calibration</span>
+                            <strong class="sim-spec-val">5.8° Anatomic-to-Mechanical Axis Offset</strong>
+                        </div>
+                        <div class="sim-spec-item">
+                            <span class="sim-spec-label">Distal Femur Resection</span>
+                            <strong class="sim-spec-val">9.0mm Measured Resection (Cartilage Compensation)</strong>
+                        </div>
+                        <div class="sim-spec-item">
+                            <span class="sim-spec-label">AR Guidance Discs</span>
+                            <strong class="sim-spec-val">Holographic Mechanical Axis &amp; Cutting Slot Guide</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simulation-guide-card">
+                    <h4 class="guide-title">Operating Room Controls</h4>
+                    <ul class="guide-steps-list">
+                        <li><span class="guide-icon">🎥</span> <strong>Camera Angles:</strong> Switch between Wide OR, AR Coronal, &amp; Resection</li>
+                        <li><span class="guide-icon">✏</span> <strong>AR Telestration:</strong> Annotate incisions &amp; trajectory angles directly</li>
+                        <li><span class="guide-icon">⚡</span> <strong>Stages (1-4):</strong> Jump to critical intra-operative milestones</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ FACULTY DASHBOARD (UNLOCKED VIA ADMIN PORTAL) ═══════════════════ -->
+<section class="faculty-dashboard-section" id="faculty-dashboard" style="display:none;">
+    <div class="container">
+        <div class="dashboard-unlocked-content" id="dashboardUnlockedContent">
+            <div class="dashboard-header-row">
+                <div>
+                    <span class="section-tag">Faculty Suite</span>
+                    <h2 class="section-title" style="margin-bottom:0">Faculty Dashboard</h2>
+                </div>
+                <div class="faculty-user-badge">
+                    <div class="faculty-user-avatar">HA</div>
+                    <div>
+                        <strong class="faculty-name-label">Hamdi Abdalkareem Abdalla</strong>
+                        <span class="faculty-role-label">Babson Slingshot Innovator · Faculty Admin</span>
+                    </div>
+                    <button class="btn-logout-sm" id="dashLogoutBtn">Log out</button>
+                </div>
+            </div>
+
+            <!-- STAT CARDS — Symmetrical enterprise typography & SVG icons -->
+            <div class="dashboard-stats-grid">
+                <div class="dash-metric-card">
+                    <div class="dash-metric-icon-box navy-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="dash-metric-body">
+                        <div class="dash-metric-val" data-count="14820" data-suffix="+">0</div>
+                        <div class="dash-metric-label">Training Hours</div>
+                        <div class="dash-metric-trend up">↑ +18% this month</div>
+                    </div>
+                </div>
+                <div class="dash-metric-card blue">
+                    <div class="dash-metric-icon-box blue-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 014.11 3h3a2 2 0 012 1.72 13 13 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 10.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 17z"/></svg>
+                    </div>
+                    <div class="dash-metric-body">
+                        <div class="dash-metric-val" data-count="840" data-suffix="+">0</div>
+                        <div class="dash-metric-label">Rural Consultations</div>
+                        <div class="dash-metric-trend up">↑ +34% this quarter</div>
+                    </div>
+                </div>
+                <div class="dash-metric-card teal">
+                    <div class="dash-metric-icon-box teal-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                    </div>
+                    <div class="dash-metric-body">
+                        <div class="dash-metric-val" data-count="12">0</div>
+                        <div class="dash-metric-label">Modules Published</div>
+                        <div class="dash-metric-trend up">↑ 3 new this week</div>
+                    </div>
+                </div>
+                <div class="dash-metric-card green">
+                    <div class="dash-metric-icon-box green-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="dash-metric-body">
+                        <div class="dash-metric-val" data-count="994" data-decimal="true">0</div>
+                        <div class="dash-metric-label">WebRTC Uptime</div>
+                        <div class="dash-metric-trend stable">● 30-day avg stable</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sparklines + Region activity (All in Surgical Navy & Cobalt Blue) -->
+            <div class="dashboard-sparkline-row">
+                <div class="sparkline-card">
+                    <div class="sparkline-label">Consultations — Past 7 Days</div>
+                    <svg class="sparkline-svg" viewBox="0 0 220 52" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#0284C7" stop-opacity="0.35"/>
+                                <stop offset="100%" stop-color="#0284C7" stop-opacity="0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0 42 L32 36 L64 28 L96 32 L128 18 L160 11 L192 7 L220 3" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M0 42 L32 36 L64 28 L96 32 L128 18 L160 11 L192 7 L220 3 L220 52 L0 52Z" fill="url(#sg1)"/>
+                    </svg>
+                    <div class="sparkline-days"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                </div>
+
+                <div class="sparkline-card">
+                    <div class="sparkline-label">Training Hours — Past 7 Days</div>
+                    <svg class="sparkline-svg" viewBox="0 0 220 52" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#0F4C81" stop-opacity="0.35"/>
+                                <stop offset="100%" stop-color="#0F4C81" stop-opacity="0"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M0 40 L32 30 L64 34 L96 20 L128 24 L160 10 L192 6 L220 2" fill="none" stroke="#0F4C81" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M0 40 L32 30 L64 34 L96 20 L128 24 L160 10 L192 6 L220 2 L220 52 L0 52Z" fill="url(#sg2)"/>
+                    </svg>
+                    <div class="sparkline-days"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                </div>
+
+                <div class="sparkline-card regions-card">
+                    <div class="sparkline-label">Active Regions</div>
+                    <div class="regions-list">
+                        <div class="region-bar-row"><span class="region-name">South Sudan</span><div class="region-bar-track"><div class="region-bar-fill" style="width:88%;background:var(--navy)"></div></div><span class="region-pct">88%</span></div>
+                        <div class="region-bar-row"><span class="region-name">Uganda</span><div class="region-bar-track"><div class="region-bar-fill" style="width:72%;background:var(--blue)"></div></div><span class="region-pct">72%</span></div>
+                        <div class="region-bar-row"><span class="region-name">Sudan</span><div class="region-bar-track"><div class="region-bar-fill" style="width:64%;background:var(--blue)"></div></div><span class="region-pct">64%</span></div>
+                        <div class="region-bar-row"><span class="region-name">Ethiopia</span><div class="region-bar-track"><div class="region-bar-fill" style="width:41%;background:var(--navy-light)"></div></div><span class="region-pct">41%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main panels -->
+            <div class="dashboard-main-grid">
+                <!-- Left: Lecture Video Publisher Studio -->
+                <div class="dashboard-panel-box">
+                    <div class="panel-header">
+                        <div class="panel-icon-wrap blue">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="12" y1="8" x2="18" y2="8"/><line x1="12" y1="12" x2="18" y2="12"/><line x1="12" y1="16" x2="16" y2="16"/></svg>
+                        </div>
+                        <div>
+                            <h3>Publish Surgical Lecture</h3>
+                            <p>Upload procedural training video &amp; add to SurgEdge Academy curriculum.</p>
+                        </div>
+                    </div>
+
+                    <form id="facultyPublishLectureForm">
+                        <!-- Video File Dropzone -->
+                        <div class="video-upload-zone" id="videoUploadDropzone">
+                            <input type="file" id="pubVideoFileInput" accept="video/mp4,video/webm,video/quicktime,video/mkv" style="display:none;">
+                            <div class="upload-dropzone-content" id="uploadDropzonePrompt">
+                                <div class="upload-icon-circle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17 8 12 3 7 8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <h4>Drag &amp; Drop Surgical Video or <span class="upload-browse-link">Browse Files</span></h4>
+                                <p class="upload-hint-text">Supports MP4, WebM, MOV (H.264 / HEVC) • Max 2GB • Auto AR telestration sync</p>
+                            </div>
+
+                            <!-- Uploaded file preview card -->
+                            <div class="upload-preview-card" id="uploadFilePreviewCard" style="display:none;">
+                                <div class="upload-preview-thumb-box">
+                                    <video id="uploadPreviewVideoEl" muted preload="metadata"></video>
+                                    <span class="preview-format-tag" id="previewFormatTag">MP4</span>
+                                </div>
+                                <div class="upload-preview-info">
+                                    <strong class="upload-file-name" id="previewFileName">surgical_procedure.mp4</strong>
+                                    <span class="upload-file-meta" id="previewFileMeta">24.5 MB • 1080p • 14:20 duration</span>
+                                    <div class="upload-progress-wrapper" id="uploadProgressWrapper">
+                                        <div class="upload-progress-bar" id="uploadProgressBar" style="width: 100%;"></div>
+                                    </div>
+                                    <span class="upload-status-label" id="uploadStatusLabel">✅ Ready for Academy Publishing</span>
+                                </div>
+                                <button type="button" class="upload-remove-btn" id="removeUploadedFileBtn" title="Remove video">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label>Procedure Title</label>
+                                <input type="text" id="pubLectureTitle" class="form-input" placeholder="e.g. Tendon Transfer — Radial Nerve Palsy" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Specialty Division</label>
+                                <select id="pubSpecialty" class="form-select">
+                                    <option value="Orthopedic Surgery">Orthopedic &amp; Trauma Surgery</option>
+                                    <option value="Plastic & Reconstructive">Plastic &amp; Reconstructive Surgery</option>
+                                    <option value="General & Trauma">General Surgery / Damage Control</option>
+                                    <option value="Pediatric Surgery">Pediatric Surgery</option>
+                                    <option value="Vascular Surgery">Vascular &amp; Hemostasis</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label>Accredited CME Credits</label>
+                                <input type="text" id="pubCmeHours" class="form-input" placeholder="e.g. 3.0 AMA PRA Category 1" value="3.0 AMA PRA Cat. 1">
+                            </div>
+                            <div class="form-group">
+                                <label>Faculty Author</label>
+                                <input type="text" class="form-input" value="Hamdi Abdalkareem Abdalla (Faculty)" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Key Procedural Milestones &amp; Learning Objectives</label>
+                            <textarea id="pubLearningObjectives" class="form-textarea" rows="2" placeholder="e.g. Coronal plane landmark mapping before incision; Bicortical pin placement avoiding nerve corridors; Trial reduction with fluoroscopy"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="btnPublishLecture">
+                            Publish Video Lecture to Curriculum Library 🚀
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Live Queue & Tele-Mentoring Activity -->
+                <div class="dash-right-col">
+                    <!-- Live Incoming Queue -->
+                    <div class="dashboard-panel-box" style="margin-bottom: 16px;">
+                        <div class="panel-header">
+                            <div class="panel-icon-wrap red">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            </div>
+                            <div>
+                                <h3>Live Guidance Queue <span class="live-dot-badge">● Live</span></h3>
+                                <p>Incoming tele-mentoring requests from rural surgical theaters.</p>
+                            </div>
+                        </div>
+
+                        <div class="call-queue-list">
+                            <div class="call-queue-item emergency">
+                                <div class="call-info">
+                                    <div class="call-clinic-name">🔴 Malakal District Hospital (South Sudan)</div>
+                                    <div class="call-procedure">Open Tibial Fracture Gr.IIIA • Pin Corridor Review</div>
+                                    <div class="call-time">⏱ In Queue: 3 mins • Bandwidth 28 kbps</div>
+                                </div>
+                                <button class="btn btn-danger btn-sm" onclick="window.showAppToast('Connecting to Malakal District Hospital Operating Room…', 'success')">Join Session →</button>
+                            </div>
+                            <div class="call-queue-item">
+                                <div class="call-info">
+                                    <div class="call-clinic-name">🟡 Gulu Regional Hospital (Uganda)</div>
+                                    <div class="call-procedure">Burn Contracture Z-Plasty • Flap Geometry Planning</div>
+                                    <div class="call-time">📅 Scheduled: Today 14:00 GMT</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="window.showAppToast('Pre-operative case notes and incision diagrams loaded.', 'info')">Review Plan</button>
+                            </div>
+                            <div class="call-queue-item">
+                                <div class="call-info">
+                                    <div class="call-clinic-name">🟢 El Fasher Field Clinic (Sudan)</div>
+                                    <div class="call-procedure">Splenic Trauma Packing • FAST Protocol Consultation</div>
+                                    <div class="call-time">📋 Ultrasound debrief submitted</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="window.showAppToast('Ultrasound debrief & telemetry records opened.', 'info')">Case Notes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Faculty Activity Feed -->
+                    <div class="dashboard-panel-box">
+                        <h3 class="activity-panel-title">Institutional Activity &amp; Audit Log</h3>
+                        <ul class="activity-feed" id="facultyActivityFeed">
+                            <li class="activity-item">
+                                <div class="activity-dot green"></div>
+                                <div class="activity-body">
+                                    <span class="activity-text"><strong>AR Knee Osteotomy Module</strong> published to global catalog</span>
+                                    <span class="activity-time">2 hours ago • Dr. Elena Rostova</span>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-dot blue"></div>
+                                <div class="activity-body">
+                                    <span class="activity-text">Live intra-operative guidance completed with <strong>Gulu Regional Hospital</strong></span>
+                                    <span class="activity-time">5 hours ago • Dr. Kwame Osei</span>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-dot navy"></div>
+                                <div class="activity-body">
+                                    <span class="activity-text">14 rural clinicians certified in <strong>Damage Control Laparotomy</strong></span>
+                                    <span class="activity-time">Yesterday • Babson KMH Cohort</span>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-dot amber"></div>
+                                <div class="activity-body">
+                                    <span class="activity-text">New tele-mentoring request dispatched from <strong>Juba Teaching Hospital</strong></span>
+                                    <span class="activity-time">2 days ago • Tele-Guidance Hub</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ TELE-GUIDANCE ═══════════════════ -->
+<section class="section-wrapper bg-subtle" id="tele-guidance">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Real-Time Tele-Mentoring</span>
+            <h2 class="section-title">Connect with a Surgeon — Right Now</h2>
+            <p class="section-subtitle">Live intra-operative guidance or pre-operative case review, from any clinic, on any device.</p>
+        </div>
+
+        <div class="tele-connect-grid">
+            <div class="tele-service-card sos-card">
+                <div class="tele-card-content">
+                    <div class="service-icon-ring red">🚨</div>
+                    <h3>Emergency Guidance</h3>
+                    <p>On-call mentor joins within 5 minutes for active intra-operative dilemmas.</p>
+                    <ul class="service-features-list">
+                        <li><span class="bullet-check">✓</span> Live AR telestration over camera</li>
+                        <li><span class="bullet-check">✓</span> Audio priority &lt;30 kbps</li>
+                        <li><span class="bullet-check">✓</span> Any smartphone, tablet, or laptop</li>
+                    </ul>
+                </div>
+                <a href="#quickCallForm" class="btn btn-danger btn-block">Request Emergency Call →</a>
+            </div>
+
+            <div class="tele-service-card mentor-card-hub">
+                <div class="tele-card-content">
+                    <div class="service-icon-ring navy">🩺</div>
+                    <h3>Pre-Op Case Review</h3>
+                    <p>Review x-rays, incision plans, and discuss strategy before entering theatre.</p>
+                    <ul class="service-features-list">
+                        <li><span class="bullet-check">✓</span> Structured review with accredited faculty</li>
+                        <li><span class="bullet-check">✓</span> Patient privacy governance</li>
+                        <li><span class="bullet-check">✓</span> Free for rural public clinics</li>
+                    </ul>
+                </div>
+                <a href="#quickCallForm" class="btn btn-secondary btn-block">Schedule Case Review →</a>
+            </div>
+        </div>
+
+        <!-- On-Call Faculty -->
+        <div class="on-call-section">
+            <h3 class="on-call-heading">On-Call Faculty</h3>
+            <p class="on-call-subheading">Click any doctor to pre-fill the consultation form.</p>
+            <div class="mentors-grid" id="mentorRosterGrid"></div>
+        </div>
+
+        <!-- Request Form -->
+        <div class="triage-wizard-card" id="quickCallForm">
+            <div class="triage-form-header">
+                <div class="triage-icon">📋</div>
+                <div>
+                    <h3>Request a Tele-Mentoring Session</h3>
+                    <p class="triage-form-sub">Fill in your case — our on-call surgeon will join your secure room immediately.</p>
+                </div>
+            </div>
+            <form id="directTeleCallForm">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Hospital / Clinic</label>
+                        <input type="text" id="quickFacility" class="form-input" placeholder="e.g. Malakal District Hospital" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Procedure / Clinical Need</label>
+                        <input type="text" id="quickProcedure" class="form-input" placeholder="e.g. Open Tibial Fracture" required>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Specialty Required</label>
+                        <select id="quickSpecialty" class="form-select">
+                            <option value="Orthopedic Surgery">Orthopedic &amp; Trauma</option>
+                            <option value="Plastic & Reconstructive">Plastic &amp; Reconstructive</option>
+                            <option value="General & Trauma">General / Damage Control</option>
+                            <option value="Pediatric Surgery">Pediatric Surgery</option>
+                            <option value="Obstetrics & Gynecology">Obstetrics &amp; Maternal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Urgency</label>
+                        <select id="quickUrgency" class="form-select">
+                            <option value="emergency">🔴 Emergency — &lt;5 mins</option>
+                            <option value="urgent">🟡 Urgent — within today</option>
+                            <option value="scheduled">🟢 Elective pre-op</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Clinical Notes</label>
+                    <textarea id="quickNotes" class="form-textarea" rows="2" placeholder="Describe the anatomical concern or guidance needed…"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Dispatch to On-Call Doctor 🚀</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ ABOUT / INSTITUTIONAL PEDIGREE ═══════════════════ -->
+<section class="section-wrapper institutional-about-section" id="about">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag">Academic Pedigree &amp; Mission</span>
+            <h2 class="section-title">Democratizing Global Surgical Education</h2>
+            <p class="section-subtitle">Born out of the Babson College Global Surgery Slingshot programme and engineered with Amodisc Ltd to eliminate geographic surgical disparity.</p>
+        </div>
+
+        <!-- Bento Grid: 4 Core Symmetrical Pillars -->
+        <div class="institutional-bento-grid">
+            <!-- Card 1: Babson KMH Centre -->
+            <div class="bento-card">
+                <div class="bento-card-top">
+                    <div class="bento-icon-box navy-bg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    </div>
+                    <span class="bento-badge">Incubated Innovation</span>
+                </div>
+                <h3>The Kerry Murphy Healey Centre · Babson College</h3>
+                <p>Developed within the <strong>Global Surgery Slingshot programme</strong> at Babson College to scale high-impact entrepreneurial innovations in global health.</p>
+                <div class="bento-meta-footer">
+                    <span class="bento-meta-item">📍 Babson Park, MA</span>
+                    <span class="bento-meta-item">🏆 Slingshot Cohort 2026</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Amodisc Ltd -->
+            <div class="bento-card">
+                <div class="bento-card-top">
+                    <div class="bento-icon-box blue-bg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <span class="bento-badge blue">Technical Architecture</span>
+                </div>
+                <h3>Amodisc Ltd · SurgHub Pedigree</h3>
+                <p>Engineered by the specialized digital simulation team behind <strong>UNITAR’s SurgHub</strong> platform, delivering robust low-bandwidth WebRTC infrastructure.</p>
+                <div class="bento-meta-footer">
+                    <span class="bento-meta-item">⚡ &lt;30 kbps Priority Stream</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Standardized Procedural Academy -->
+            <div class="bento-card">
+                <div class="bento-card-top">
+                    <div class="bento-icon-box navy-bg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <span class="bento-badge">Accredited Standard</span>
+                </div>
+                <h3>Standardized Procedural Curriculum</h3>
+                <p>Interactive procedural modules with synchronized AR telestration, milestone checklists, and accredited <strong>AMA PRA Category 1 CME</strong>.</p>
+                <div class="bento-meta-footer">
+                    <span class="bento-meta-item">🎓 Verified CME Accredited</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Humanitarian Priority -->
+            <div class="bento-card">
+                <div class="bento-card-top">
+                    <div class="bento-icon-box blue-bg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                    </div>
+                    <span class="bento-badge blue">Humanitarian Access</span>
+                </div>
+                <h3>Conflict &amp; Low-Resource Priority</h3>
+                <p>100% free intra-operative guidance for public district hospitals in South Sudan, Uganda, and conflict zones with zero proprietary hardware.</p>
+                <div class="bento-meta-footer">
+                    <span class="bento-meta-item">🌍 Zero Hardware Barrier</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leadership & Innovation Banner -->
+        <div class="institutional-leadership-bar">
+            <div class="leadership-profile-card">
+                <div class="leadership-avatar">HA</div>
+                <div class="leadership-info">
+                    <strong>Hamdi Abdalkareem Abdalla</strong>
+                    <span>Founder &amp; Innovator · Babson College Slingshot Cohort</span>
+                </div>
+            </div>
+            <div class="leadership-divider"></div>
+            <div class="leadership-profile-card">
+                <div class="leadership-avatar navy">KM</div>
+                <div class="leadership-info">
+                    <strong>Babson KMH Centre &amp; Amodisc</strong>
+                    <span>Global Surgery Slingshot · Technical Engineering</span>
+                </div>
+            </div>
+            <div class="leadership-divider"></div>
+            <div class="leadership-quote-box">
+                <p>"Geographic distance must never determine a patient’s surgical outcome."</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-inner-clean">
+            <div>
+                <span class="footer-brand-title">SurgEdge</span>
+                <p class="footer-tagline">Surgical Education &amp; Tele-Guidance · Babson College</p>
+            </div>
+            <ul class="footer-nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#curriculum">Curriculum</a></li>
+                <li><a href="#simulation">3D Simulation</a></li>
+                <li><a href="#tele-guidance">Tele-Guidance</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="mailto:hamdi00127@gmail.com">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-disclaimer-clean">
+            <span>© 2026 SurgEdge · Babson College Global Surgery Slingshot · Amodisc Ltd</span>
+            <span>Advisory platform — surgeon retains full operative autonomy</span>
+        </div>
+    </div>
+</footer>
+
+<!-- ═══════════════════ FACULTY AUTH MODAL ═══════════════════ -->
+<div class="modal-overlay" id="ownerAuthModal">
+    <div class="auth-modal-dialog">
+        <div class="modal-header-row">
+            <h3>Faculty Portal</h3>
+            <button class="modal-close-btn" id="closeAuthModalBtn">×</button>
+        </div>
+        <p class="modal-desc">Restricted to Babson KMH faculty and Amodisc administrators.</p>
+
+        <button type="button" class="btn btn-primary btn-block" id="quickFacultyLoginBtn" style="margin-bottom:14px">
+            ⚡ Quick Access — Hamdi Abdalkareem (Faculty)
+        </button>
+
+        <div class="modal-divider">— or enter passcode —</div>
+
+        <form id="ownerAuthForm">
+            <div class="form-group">
+                <label>Passcode</label>
+                <input type="password" id="ownerPasscodeInput" class="form-input" placeholder="Faculty passcode" required>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-block">Authenticate &amp; Enter Dashboard →</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="js/data.js"></script>
+<script src="js/or-panorama-data.js"></script>
+<script src="js/or-simulation-studio.js"></script>
+<script src="js/video-studio.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
