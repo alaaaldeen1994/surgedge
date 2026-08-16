@@ -2586,63 +2586,38 @@ h1,h2,h3,h4,h5,h6 {
     white-space: nowrap;
     border-width: 0;
 }
-.curriculum-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.btn-upload-hero {
-    background: linear-gradient(135deg, #0F4C81, #0284C7);
-    color: #ffffff;
+.btn-catalog-upload {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #0284C7;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    padding: 4px 10px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    cursor: pointer;
     transition: all 0.2s ease;
-    border: none;
+}
+.btn-catalog-upload:hover {
+    background: #0284C7;
+    border-color: #0284C7;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+.upload-tool-btn {
+    background: rgba(2, 132, 199, 0.15) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    color: #0284C7 !important;
+    font-weight: 600;
     cursor: pointer;
 }
-.btn-upload-hero:hover {
-    background: linear-gradient(135deg, #0284C7, #38BDF8);
-    color: #07111E;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+.upload-tool-btn:hover {
+    background: #0284C7 !important;
+    color: #ffffff !important;
 }
-.video-upload-banner {
-    background: linear-gradient(135deg, #07111E 0%, #0F2744 100%);
-    border: 1.5px dashed rgba(56, 189, 248, 0.4);
-    border-radius: 12px;
-    padding: 16px 24px;
-    margin-bottom: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    transition: all 0.25s ease;
-    cursor: pointer;
-}
-.video-upload-banner:hover,
-.video-upload-banner.dragover {
-    border-color: #38BDF8;
-    background: linear-gradient(135deg, #0B192C 0%, #16365C 100%);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
-}
-.upload-banner-content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: #F8FAFC;
-}
-.upload-banner-content strong {
-    display: block;
-    font-size: 0.95rem;
-    color: #38BDF8;
-    margin-bottom: 2px;
-}
+
 .upload-banner-content p {
     font-size: 0.8rem;
     color: #94A3B8;

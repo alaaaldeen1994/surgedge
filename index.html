@@ -126,31 +126,13 @@
 <!-- ═══════════════════ CURRICULUM ═══════════════════ -->
 <section class="section-wrapper bg-subtle" id="curriculum">
     <div class="container">
-        <div class="section-header curriculum-header-flex">
-            <div>
-                <span class="section-tag">Surgical Education Academy</span>
-                <h2 class="section-title">Procedural Curriculum Library</h2>
-                <p class="section-subtitle">Faculty-curated operative video lectures with AR telestration and CME certification.</p>
-            </div>
-            <div class="curriculum-header-actions">
-                <input type="file" id="curriculumQuickUploadInput" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska,video/*" class="sr-only-input">
-                <label for="curriculumQuickUploadInput" class="btn btn-primary btn-upload-hero" id="curriculumQuickUploadBtn" title="Upload an operative video from your computer">
-                    <span>📤</span> Upload Operative Video
-                </label>
-            </div>
+        <div class="section-header">
+            <span class="section-tag">Surgical Education Academy</span>
+            <h2 class="section-title">Procedural Curriculum Library</h2>
+            <p class="section-subtitle">Faculty-curated operative video lectures with AR telestration and CME certification.</p>
         </div>
 
-        <!-- Quick Video Upload Dropzone Banner -->
-        <label for="curriculumQuickUploadInput" class="video-upload-banner" id="curriculumDropBanner">
-            <div class="upload-banner-content">
-                <div class="upload-icon-pulse">📁</div>
-                <div>
-                    <strong>Upload your own Operative Video</strong>
-                    <p>Select any .MP4, .WEBM, or .MOV video to load into the AR interactive player with live telestration and CME chapter tracking.</p>
-                </div>
-            </div>
-            <span class="btn btn-outline-white btn-sm" id="curriculumBrowseBtn">Browse Video Files</span>
-        </label>
+        <input type="file" id="curriculumQuickUploadInput" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska,video/*" class="sr-only-input">
 
         <div class="curriculum-layout">
             <!-- Player -->
@@ -170,6 +152,7 @@
                         <div class="curriculum-color-swatch" data-color="#FBBF24" style="background:#FBBF24" title="Amber"></div>
                         <button class="curriculum-tool-btn" id="studioClearCanvasBtn" title="Clear">🗑</button>
                         <button class="curriculum-tool-btn highlight-action" id="studioExportSnapshotBtn" title="Save snapshot">📸 Save</button>
+                        <label for="curriculumQuickUploadInput" class="curriculum-tool-btn upload-tool-btn" title="Upload new video into player">📤 Upload</label>
                     </div>
                 </div>
 
@@ -238,8 +221,13 @@
 
                 <div class="curriculum-catalog-box">
                     <div class="box-header-row">
-                        <h4 class="catalog-heading">Module Catalog</h4>
-                        <span class="module-count-tag" id="moduleCountTag">4 modules</span>
+                        <div>
+                            <h4 class="catalog-heading">Module Catalog</h4>
+                            <span class="module-count-tag" id="moduleCountTag">4 modules</span>
+                        </div>
+                        <label for="curriculumQuickUploadInput" class="btn-catalog-upload" title="Upload custom operative video case">
+                            <span>+</span> Upload Case
+                        </label>
                     </div>
                     <div id="preloadedVideosList"></div>
                 </div>
